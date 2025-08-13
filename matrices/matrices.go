@@ -1,10 +1,11 @@
 package matrices
 
 import (
+	"math"
 	"raytracer-vibe/tuples"
-
-	"github.com/google/go-cmp/cmp"
 )
+
+const epsilon = 0.00001
 
 type Matrix struct {
 	rows, cols int
@@ -41,7 +42,17 @@ func (m Matrix) Get(row, col int) float64 {
 }
 
 func (m Matrix) Equals(m2 Matrix) bool {
-	return cmp.Equal(m.data, m2.data)
+	if m.rows != m2.rows || m.cols != m2.cols {
+		return false
+	}
+	for i := range m.rows {
+		for j := range m.cols {
+			if math.Abs(m.data[i][j]-m2.data[i][j]) > epsilon {
+				return false
+			}
+		}
+	}
+	return true
 }
 
 func (m Matrix) Multiply(m2 Matrix) Matrix {
@@ -73,4 +84,71 @@ func (m Matrix) Transpose() Matrix {
 		}
 	}
 	return t
+}
+
+func (m Matrix) Determinant() float64 {
+	var det float64
+	const two = 2
+	if m.rows == two {
+		det = m.data[0][0]*m.data[1][1] - m.data[0][1]*m.data[1][0]
+	} else {
+		for j := range m.cols {
+			det += m.data[0][j] * m.Cofactor(0, j)
+		}
+	}
+	return det
+}
+
+func (m Matrix) Submatrix(row, col int) Matrix {
+	sub := New(m.rows-1, m.cols-1)
+	for i := range m.rows {
+		if i == row {
+			continue
+		}
+		for j := range m.cols {
+			if j == col {
+				continue
+			}
+			subI, subJ := i, j
+			if i > row {
+				subI--
+			}
+			if j > col {
+				subJ--
+			}
+			sub.data[subI][subJ] = m.data[i][j]
+		}
+	}
+	return sub
+}
+
+func (m Matrix) Minor(row, col int) float64 {
+	return m.Submatrix(row, col).Determinant()
+}
+
+func (m Matrix) Cofactor(row, col int) float64 {
+	minor := m.Minor(row, col)
+	if (row+col)%2 == 1 {
+		return -minor
+	}
+	return minor
+}
+
+func (m Matrix) IsInvertible() bool {
+	return m.Determinant() != 0
+}
+
+func (m Matrix) Inverse() Matrix {
+	if !m.IsInvertible() {
+		panic("matrix not invertible")
+	}
+	m2 := New(m.rows, m.cols)
+	det := m.Determinant()
+	for i := range m.rows {
+		for j := range m.cols {
+			c := m.Cofactor(i, j)
+			m2.data[j][i] = c / det
+		}
+	}
+	return m2
 }
