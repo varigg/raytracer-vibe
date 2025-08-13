@@ -120,3 +120,11 @@ func Cross(t1, t2 Tuple) Tuple {
 		t1.X*t2.Y-t1.Y*t2.X,
 	)
 }
+
+func New(x, y, z, w float64) Tuple {
+	return Tuple{X: x, Y: y, Z: z, W: w}
+}
+
+func (t1 Tuple) Equals(t2 Tuple) bool {
+	return Equal(t1, t2)
+}
