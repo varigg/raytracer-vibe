@@ -41,4 +41,3 @@ func main() {
 
 	fmt.Printf("Projectile hit the ground after %d ticks.\n", ticks)
 }
-

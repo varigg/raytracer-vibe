@@ -13,22 +13,22 @@ const (
 
 type Canvas struct {
 	Width, Height int
-	Pixels        []tuples.Tuple
+	Pixels        []tuples.Color
 }
 
 func NewCanvas(width, height int) *Canvas {
-	pixels := make([]tuples.Tuple, width*height)
+	pixels := make([]tuples.Color, width*height)
 	for i := range pixels {
-		pixels[i] = tuples.Color(0, 0, 0)
+		pixels[i] = tuples.NewColor(0, 0, 0)
 	}
 	return &Canvas{Width: width, Height: height, Pixels: pixels}
 }
 
-func (c *Canvas) WritePixel(x, y int, color tuples.Tuple) {
+func (c *Canvas) WritePixel(x, y int, color tuples.Color) {
 	c.Pixels[y*c.Width+x] = color
 }
 
-func (c *Canvas) PixelAt(x, y int) tuples.Tuple {
+func (c *Canvas) PixelAt(x, y int) tuples.Color {
 	return c.Pixels[y*c.Width+x]
 }
 
@@ -37,7 +37,6 @@ func (c *Canvas) ToPPM() string {
 	line := ""
 	for y := range c.Height {
 		for x := range c.Width {
-
 			pixel := c.PixelAt(x, y)
 			r := scaleAndClamp(pixel.Red())
 			g := scaleAndClamp(pixel.Green())

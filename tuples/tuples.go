@@ -6,6 +6,26 @@ type Tuple struct {
 	X, Y, Z, W float64
 }
 
+type Color struct {
+	Tuple
+}
+
+func NewColor(r, g, b float64) Color {
+	return Color{Tuple{X: r, Y: g, Z: b, W: 0.0}}
+}
+
+func (c Color) Red() float64 {
+	return c.X
+}
+
+func (c Color) Green() float64 {
+	return c.Y
+}
+
+func (c Color) Blue() float64 {
+	return c.Z
+}
+
 func Add(t1, t2 Tuple) Tuple {
 	return Tuple{
 		X: t1.X + t2.X,
@@ -18,10 +38,14 @@ func Add(t1, t2 Tuple) Tuple {
 const epsilon = 0.00001
 
 func Equal(t1, t2 Tuple) bool {
-	return math.Abs(t1.X-t2.X) < epsilon &&
-		math.Abs(t1.Y-t2.Y) < epsilon &&
-		math.Abs(t1.Z-t2.Z) < epsilon &&
-		math.Abs(t1.W-t2.W) < epsilon
+	return FloatEqual(t1.X, t2.X) &&
+		FloatEqual(t1.Y, t2.Y) &&
+		FloatEqual(t1.Z, t2.Z) &&
+		FloatEqual(t1.W, t2.W)
+}
+
+func FloatEqual(a, b float64) bool {
+	return math.Abs(a-b) < epsilon
 }
 
 func Point(x, y, z float64) Tuple {
