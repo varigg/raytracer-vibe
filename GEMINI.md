@@ -1,3 +1,3 @@
 The goal of the project is to build a raytracer. We will approach the project incrementally, building a foundation of basic routines and tools and then using them to build more advanced functionality around rays, shapes and how they interact. I will outline the current goals in Plan.md. It will contain a set of tests and hints how to make them pass.
 Your job is to implement the tests one by and write the necessary code to make them pass, refactoring as needed as the project grows. When writing tests add a go doc comment with the scenario description for easier reference. The project will be written in go, using standard go conventions for project layout.
-After the plan has been completed and all tests pass, create a commit.
+After the plan has been completed, all tests pass and there are no linting issues, create a commit.
