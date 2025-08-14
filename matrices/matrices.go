@@ -6,6 +6,7 @@ import (
 )
 
 const epsilon = 0.00001
+const DefaultMatrixSize = 4
 
 type Matrix struct {
 	rows, cols int
@@ -153,8 +154,6 @@ func (m Matrix) Inverse() Matrix {
 	return m2
 }
 
-const DefaultMatrixSize = 4
-
 func Translation(x, y, z float64) Matrix {
 	m := Identity(DefaultMatrixSize)
 	m.data[0][3] = x
@@ -195,5 +194,16 @@ func RotationZ(radians float64) Matrix {
 	m.data[0][1] = -math.Sin(radians)
 	m.data[1][0] = math.Sin(radians)
 	m.data[1][1] = math.Cos(radians)
+	return m
+}
+
+func Shearing(xy, xz, yx, yz, zx, zy float64) Matrix {
+	m := Identity(DefaultMatrixSize)
+	m.data[0][1] = xy
+	m.data[0][2] = xz
+	m.data[1][0] = yx
+	m.data[1][2] = yz
+	m.data[2][0] = zx
+	m.data[2][1] = zy
 	return m
 }

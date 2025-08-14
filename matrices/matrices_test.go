@@ -556,3 +556,69 @@ func TestRotationZ(t *testing.T) {
 	assert.True(t, halfQuarter.MultiplyTuple(p).Equals(expectedHalf))
 	assert.True(t, fullQuarter.MultiplyTuple(p).Equals(expectedFull))
 }
+
+// Scenario: A shearing transformation moves x in proportion to y.
+// Given transform ← shearing(1, 0, 0, 0, 0, 0)
+// And p ← point(2, 3, 4)
+// Then transform * p = point(5, 3, 4).
+func TestShearingXinProportionToY(t *testing.T) {
+	transform := matrices.Shearing(1, 0, 0, 0, 0, 0)
+	p := tuples.Point(2, 3, 4)
+	expected := tuples.Point(5, 3, 4)
+	assert.True(t, transform.MultiplyTuple(p).Equals(expected))
+}
+
+// Scenario: A shearing transformation moves x in proportion to z.
+// Given transform ← shearing(0, 1, 0, 0, 0, 0)
+// And p ← point(2, 3, 4)
+// Then transform * p = point(6, 3, 4).
+func TestShearingXinProportionToZ(t *testing.T) {
+	transform := matrices.Shearing(0, 1, 0, 0, 0, 0)
+	p := tuples.Point(2, 3, 4)
+	expected := tuples.Point(6, 3, 4)
+	assert.True(t, transform.MultiplyTuple(p).Equals(expected))
+}
+
+// Scenario: A shearing transformation moves y in proportion to x.
+// Given transform ← shearing(0, 0, 1, 0, 0, 0)
+// And p ← point(2, 3, 4)
+// Then transform * p = point(2, 5, 4).
+func TestShearingYinProportionToX(t *testing.T) {
+	transform := matrices.Shearing(0, 0, 1, 0, 0, 0)
+	p := tuples.Point(2, 3, 4)
+	expected := tuples.Point(2, 5, 4)
+	assert.True(t, transform.MultiplyTuple(p).Equals(expected))
+}
+
+// Scenario: A shearing transformation moves y in proportion to z.
+// Given transform ← shearing(0, 0, 0, 1, 0, 0)
+// And p ← point(2, 3, 4)
+// Then transform * p = point(2, 7, 4).
+func TestShearingYinProportionToZ(t *testing.T) {
+	transform := matrices.Shearing(0, 0, 0, 1, 0, 0)
+	p := tuples.Point(2, 3, 4)
+	expected := tuples.Point(2, 7, 4)
+	assert.True(t, transform.MultiplyTuple(p).Equals(expected))
+}
+
+// Scenario: A shearing transformation moves z in proportion to x.
+// Given transform ← shearing(0, 0, 0, 0, 1, 0)
+// And p ← point(2, 3, 4)
+// Then transform * p = point(2, 3, 6).
+func TestShearingZinProportionToX(t *testing.T) {
+	transform := matrices.Shearing(0, 0, 0, 0, 1, 0)
+	p := tuples.Point(2, 3, 4)
+	expected := tuples.Point(2, 3, 6)
+	assert.True(t, transform.MultiplyTuple(p).Equals(expected))
+}
+
+// Scenario: A shearing transformation moves z in proportion to y.
+// Given transform ← shearing(0, 0, 0, 0, 0, 1)
+// And p ← point(2, 3, 4)
+// Then transform * p = point(2, 3, 7).
+func TestShearingZinProportionToY(t *testing.T) {
+	transform := matrices.Shearing(0, 0, 0, 0, 0, 1)
+	p := tuples.Point(2, 3, 4)
+	expected := tuples.Point(2, 3, 7)
+	assert.True(t, transform.MultiplyTuple(p).Equals(expected))
+}
