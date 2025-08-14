@@ -622,3 +622,50 @@ func TestShearingZinProportionToY(t *testing.T) {
 	expected := tuples.Point(2, 3, 7)
 	assert.True(t, transform.MultiplyTuple(p).Equals(expected))
 }
+
+// Scenario: Individual transformations are applied in sequence
+// Given p ← point(1, 0, 1)
+// And A ← rotation_x(π / 2)
+// And B ← scaling(5, 5, 5)
+// And C ← translation(10, 5, 7)
+// # apply rotation first
+// When p2 ← A * p
+// Then p2 = point(1, -1, 0)
+// # then apply scaling
+// When p3 ← B * p2
+// Then p3 = point(5, -5, 0)
+// # then apply translation
+// When p4 ← C * p3
+// Then p4 = point(15, 0, 7).
+func TestIndividualTransformations(t *testing.T) {
+	p := tuples.Point(1, 0, 1)
+	a := matrices.RotationX(math.Pi / 2)
+	b := matrices.Scaling(5, 5, 5)
+	c := matrices.Translation(10, 5, 7)
+
+	p2 := a.MultiplyTuple(p)
+	assert.True(t, p2.Equals(tuples.Point(1, -1, 0)))
+
+	p3 := b.MultiplyTuple(p2)
+	assert.True(t, p3.Equals(tuples.Point(5, -5, 0)))
+
+	p4 := c.MultiplyTuple(p3)
+	assert.True(t, p4.Equals(tuples.Point(15, 0, 7)))
+}
+
+// Scenario: Chained transformations must be applied in reverse order
+// Given p ← point(1, 0, 1)
+// And A ← rotation_x(π / 2)
+// And B ← scaling(5, 5, 5)
+// And C ← translation(10, 5, 7)
+// When T ← C * B * A
+// Then T * p = point(15, 0, 7).
+func TestChainedTransformations(t *testing.T) {
+	p := tuples.Point(1, 0, 1)
+	a := matrices.RotationX(math.Pi / 2)
+	b := matrices.Scaling(5, 5, 5)
+	c := matrices.Translation(10, 5, 7)
+
+	transform := c.Multiply(b).Multiply(a)
+	assert.True(t, transform.MultiplyTuple(p).Equals(tuples.Point(15, 0, 7)))
+}
