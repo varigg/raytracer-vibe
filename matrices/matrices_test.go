@@ -1,6 +1,7 @@
 package matrices_test
 
 import (
+	"math"
 	"raytracer-vibe/matrices"
 	"raytracer-vibe/tuples"
 	"testing"
@@ -413,4 +414,145 @@ func TestMultiplyProductByInverse(t *testing.T) {
 	b := matrices.New(4, 4, 8, 2, 2, 2, 3, -1, 7, 0, 7, 0, 5, 4, 6, -2, 0, 5)
 	c := a.Multiply(b)
 	assert.True(t, c.Multiply(b.Inverse()).Equals(a))
+}
+
+// Scenario: Multiplying by a translation matrix
+// Given transform ← translation(5, -3, 2)
+// And p ← point(-3, 4, 5)
+// Then transform * p = point(2, 1, 7)
+func TestTranslation(t *testing.T) {
+	transform := matrices.Translation(5, -3, 2)
+	p := tuples.Point(-3, 4, 5)
+	expected := tuples.Point(2, 1, 7)
+	assert.True(t, transform.MultiplyTuple(p).Equals(expected))
+}
+
+// Scenario: Multiplying by the inverse of a translation matrix
+// Given transform ← translation(5, -3, 2)
+// And inv ← inverse(transform)
+// And p ← point(-3, 4, 5)
+// Then inv * p = point(-8, 7, 3)
+func TestTranslationInverse(t *testing.T) {
+	transform := matrices.Translation(5, -3, 2)
+	inv := transform.Inverse()
+	p := tuples.Point(-3, 4, 5)
+	expected := tuples.Point(-8, 7, 3)
+	assert.True(t, inv.MultiplyTuple(p).Equals(expected))
+}
+
+// Scenario: Translation does not affect vectors
+// Given transform ← translation(5, -3, 2)
+// And v ← vector(-3, 4, 5)
+// Then transform * v = v
+func TestTranslationVector(t *testing.T) {
+	transform := matrices.Translation(5, -3, 2)
+	v := tuples.Vector(-3, 4, 5)
+	assert.True(t, transform.MultiplyTuple(v).Equals(v))
+}
+
+// Scenario: A scaling matrix applied to a point
+// Given transform ← scaling(2, 3, 4)
+// And p ← point(-4, 6, 8)
+// Then transform * p = point(-8, 18, 32)
+func TestScalingPoint(t *testing.T) {
+	transform := matrices.Scaling(2, 3, 4)
+	p := tuples.Point(-4, 6, 8)
+	expected := tuples.Point(-8, 18, 32)
+	assert.True(t, transform.MultiplyTuple(p).Equals(expected))
+}
+
+// Scenario: A scaling matrix applied to a vector
+// Given transform ← scaling(2, 3, 4)
+// And v ← vector(-4, 6, 8)
+// Then transform * v = vector(-8, 18, 32)
+func TestScalingVector(t *testing.T) {
+	transform := matrices.Scaling(2, 3, 4)
+	v := tuples.Vector(-4, 6, 8)
+	expected := tuples.Vector(-8, 18, 32)
+	assert.True(t, transform.MultiplyTuple(v).Equals(expected))
+}
+
+// Scenario: Multiplying by the inverse of a scaling matrix
+// Given transform ← scaling(2, 3, 4)
+// And inv ← inverse(transform)
+// And v ← vector(-4, 6, 8)
+// Then inv * v = vector(-2, 2, 2)
+func TestScalingInverse(t *testing.T) {
+	transform := matrices.Scaling(2, 3, 4)
+	inv := transform.Inverse()
+	v := tuples.Vector(-4, 6, 8)
+	expected := tuples.Vector(-2, 2, 2)
+	assert.True(t, inv.MultiplyTuple(v).Equals(expected))
+}
+
+// Scenario: Reflection is scaling by a negative value
+// Given transform ← scaling(-1, 1, 1)
+// And p ← point(2, 3, 4)
+// Then transform * p = point(-2, 3, 4)
+func TestReflection(t *testing.T) {
+	transform := matrices.Scaling(-1, 1, 1)
+	p := tuples.Point(2, 3, 4)
+	expected := tuples.Point(-2, 3, 4)
+	assert.True(t, transform.MultiplyTuple(p).Equals(expected))
+}
+
+// Scenario: Rotating a point around the x axis
+// Given p ← point(0, 1, 0)
+// And half_quarter ← rotation_x(π / 4)
+// And full_quarter ← rotation_x(π / 2)
+// Then half_quarter * p = point(0, √2/2, √2/2)
+// And full_quarter * p = point(0, 0, 1)
+func TestRotationX(t *testing.T) {
+	p := tuples.Point(0, 1, 0)
+	halfQuarter := matrices.RotationX(math.Pi / 4)
+	fullQuarter := matrices.RotationX(math.Pi / 2)
+	expectedHalf := tuples.Point(0, math.Sqrt2/2, math.Sqrt2/2)
+	expectedFull := tuples.Point(0, 0, 1)
+	assert.True(t, halfQuarter.MultiplyTuple(p).Equals(expectedHalf))
+	assert.True(t, fullQuarter.MultiplyTuple(p).Equals(expectedFull))
+}
+
+// Scenario: The inverse of an x-rotation rotates in the opposite direction
+// Given p ← point(0, 1, 0)
+// And half_quarter ← rotation_x(π / 4)
+// And inv ← inverse(half_quarter)
+// Then inv * p = point(0, √2/2, -√2/2)
+func TestRotationXInverse(t *testing.T) {
+	p := tuples.Point(0, 1, 0)
+	halfQuarter := matrices.RotationX(math.Pi / 4)
+	inv := halfQuarter.Inverse()
+	expected := tuples.Point(0, math.Sqrt2/2, -math.Sqrt2/2)
+	assert.True(t, inv.MultiplyTuple(p).Equals(expected))
+}
+
+// Scenario: Rotating a point around the y axis
+// Given p ← point(0, 0, 1)
+// And half_quarter ← rotation_y(π / 4)
+// And full_quarter ← rotation_y(π / 2)
+// Then half_quarter * p = point(√2/2, 0, √2/2)
+// And full_quarter * p = point(1, 0, 0)
+func TestRotationY(t *testing.T) {
+	p := tuples.Point(0, 0, 1)
+	halfQuarter := matrices.RotationY(math.Pi / 4)
+	fullQuarter := matrices.RotationY(math.Pi / 2)
+	expectedHalf := tuples.Point(math.Sqrt2/2, 0, math.Sqrt2/2)
+	expectedFull := tuples.Point(1, 0, 0)
+	assert.True(t, halfQuarter.MultiplyTuple(p).Equals(expectedHalf))
+	assert.True(t, fullQuarter.MultiplyTuple(p).Equals(expectedFull))
+}
+
+// Scenario: Rotating a point around the z axis
+// Given p ← point(0, 1, 0)
+// And half_quarter ← rotation_z(π / 4)
+// And full_quarter ← rotation_z(π / 2)
+// Then half_quarter * p = point(-√2/2, √2/2, 0)
+// And full_quarter * p = point(-1, 0, 0)
+func TestRotationZ(t *testing.T) {
+	p := tuples.Point(0, 1, 0)
+	halfQuarter := matrices.RotationZ(math.Pi / 4)
+	fullQuarter := matrices.RotationZ(math.Pi / 2)
+	expectedHalf := tuples.Point(-math.Sqrt2/2, math.Sqrt2/2, 0)
+	expectedFull := tuples.Point(-1, 0, 0)
+	assert.True(t, halfQuarter.MultiplyTuple(p).Equals(expectedHalf))
+	assert.True(t, fullQuarter.MultiplyTuple(p).Equals(expectedFull))
 }

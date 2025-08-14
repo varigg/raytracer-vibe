@@ -152,3 +152,46 @@ func (m Matrix) Inverse() Matrix {
 	}
 	return m2
 }
+
+func Translation(x, y, z float64) Matrix {
+	m := Identity(4)
+	m.data[0][3] = x
+	m.data[1][3] = y
+	m.data[2][3] = z
+	return m
+}
+
+func Scaling(x, y, z float64) Matrix {
+	m := Identity(4)
+	m.data[0][0] = x
+	m.data[1][1] = y
+	m.data[2][2] = z
+	return m
+}
+
+func RotationX(radians float64) Matrix {
+	m := Identity(4)
+	m.data[1][1] = math.Cos(radians)
+	m.data[1][2] = -math.Sin(radians)
+	m.data[2][1] = math.Sin(radians)
+	m.data[2][2] = math.Cos(radians)
+	return m
+}
+
+func RotationY(radians float64) Matrix {
+	m := Identity(4)
+	m.data[0][0] = math.Cos(radians)
+	m.data[0][2] = math.Sin(radians)
+	m.data[2][0] = -math.Sin(radians)
+	m.data[2][2] = math.Cos(radians)
+	return m
+}
+
+func RotationZ(radians float64) Matrix {
+	m := Identity(4)
+	m.data[0][0] = math.Cos(radians)
+	m.data[0][1] = -math.Sin(radians)
+	m.data[1][0] = math.Sin(radians)
+	m.data[1][1] = math.Cos(radians)
+	return m
+}
