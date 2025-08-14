@@ -153,8 +153,10 @@ func (m Matrix) Inverse() Matrix {
 	return m2
 }
 
+const DefaultMatrixSize = 4
+
 func Translation(x, y, z float64) Matrix {
-	m := Identity(4)
+	m := Identity(DefaultMatrixSize)
 	m.data[0][3] = x
 	m.data[1][3] = y
 	m.data[2][3] = z
@@ -162,7 +164,7 @@ func Translation(x, y, z float64) Matrix {
 }
 
 func Scaling(x, y, z float64) Matrix {
-	m := Identity(4)
+	m := Identity(DefaultMatrixSize)
 	m.data[0][0] = x
 	m.data[1][1] = y
 	m.data[2][2] = z
@@ -170,7 +172,7 @@ func Scaling(x, y, z float64) Matrix {
 }
 
 func RotationX(radians float64) Matrix {
-	m := Identity(4)
+	m := Identity(DefaultMatrixSize)
 	m.data[1][1] = math.Cos(radians)
 	m.data[1][2] = -math.Sin(radians)
 	m.data[2][1] = math.Sin(radians)
@@ -179,7 +181,7 @@ func RotationX(radians float64) Matrix {
 }
 
 func RotationY(radians float64) Matrix {
-	m := Identity(4)
+	m := Identity(DefaultMatrixSize)
 	m.data[0][0] = math.Cos(radians)
 	m.data[0][2] = math.Sin(radians)
 	m.data[2][0] = -math.Sin(radians)
@@ -188,7 +190,7 @@ func RotationY(radians float64) Matrix {
 }
 
 func RotationZ(radians float64) Matrix {
-	m := Identity(4)
+	m := Identity(DefaultMatrixSize)
 	m.data[0][0] = math.Cos(radians)
 	m.data[0][1] = -math.Sin(radians)
 	m.data[1][0] = math.Sin(radians)

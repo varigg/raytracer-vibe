@@ -419,7 +419,7 @@ func TestMultiplyProductByInverse(t *testing.T) {
 // Scenario: Multiplying by a translation matrix
 // Given transform ← translation(5, -3, 2)
 // And p ← point(-3, 4, 5)
-// Then transform * p = point(2, 1, 7)
+// Then transform * p = point(2, 1, 7).
 func TestTranslation(t *testing.T) {
 	transform := matrices.Translation(5, -3, 2)
 	p := tuples.Point(-3, 4, 5)
@@ -431,7 +431,7 @@ func TestTranslation(t *testing.T) {
 // Given transform ← translation(5, -3, 2)
 // And inv ← inverse(transform)
 // And p ← point(-3, 4, 5)
-// Then inv * p = point(-8, 7, 3)
+// Then inv * p = point(-8, 7, 3).
 func TestTranslationInverse(t *testing.T) {
 	transform := matrices.Translation(5, -3, 2)
 	inv := transform.Inverse()
@@ -440,10 +440,10 @@ func TestTranslationInverse(t *testing.T) {
 	assert.True(t, inv.MultiplyTuple(p).Equals(expected))
 }
 
-// Scenario: Translation does not affect vectors
+// Scenario: Translation does not affect vectors.
 // Given transform ← translation(5, -3, 2)
 // And v ← vector(-3, 4, 5)
-// Then transform * v = v
+// Then transform * v = v.
 func TestTranslationVector(t *testing.T) {
 	transform := matrices.Translation(5, -3, 2)
 	v := tuples.Vector(-3, 4, 5)
@@ -453,7 +453,7 @@ func TestTranslationVector(t *testing.T) {
 // Scenario: A scaling matrix applied to a point
 // Given transform ← scaling(2, 3, 4)
 // And p ← point(-4, 6, 8)
-// Then transform * p = point(-8, 18, 32)
+// Then transform * p = point(-8, 18, 32).
 func TestScalingPoint(t *testing.T) {
 	transform := matrices.Scaling(2, 3, 4)
 	p := tuples.Point(-4, 6, 8)
@@ -464,7 +464,7 @@ func TestScalingPoint(t *testing.T) {
 // Scenario: A scaling matrix applied to a vector
 // Given transform ← scaling(2, 3, 4)
 // And v ← vector(-4, 6, 8)
-// Then transform * v = vector(-8, 18, 32)
+// Then transform * v = vector(-8, 18, 32).
 func TestScalingVector(t *testing.T) {
 	transform := matrices.Scaling(2, 3, 4)
 	v := tuples.Vector(-4, 6, 8)
@@ -476,7 +476,7 @@ func TestScalingVector(t *testing.T) {
 // Given transform ← scaling(2, 3, 4)
 // And inv ← inverse(transform)
 // And v ← vector(-4, 6, 8)
-// Then inv * v = vector(-2, 2, 2)
+// Then inv * v = vector(-2, 2, 2).
 func TestScalingInverse(t *testing.T) {
 	transform := matrices.Scaling(2, 3, 4)
 	inv := transform.Inverse()
@@ -488,7 +488,7 @@ func TestScalingInverse(t *testing.T) {
 // Scenario: Reflection is scaling by a negative value
 // Given transform ← scaling(-1, 1, 1)
 // And p ← point(2, 3, 4)
-// Then transform * p = point(-2, 3, 4)
+// Then transform * p = point(-2, 3, 4).
 func TestReflection(t *testing.T) {
 	transform := matrices.Scaling(-1, 1, 1)
 	p := tuples.Point(2, 3, 4)
@@ -501,7 +501,7 @@ func TestReflection(t *testing.T) {
 // And half_quarter ← rotation_x(π / 4)
 // And full_quarter ← rotation_x(π / 2)
 // Then half_quarter * p = point(0, √2/2, √2/2)
-// And full_quarter * p = point(0, 0, 1)
+// And full_quarter * p = point(0, 0, 1).
 func TestRotationX(t *testing.T) {
 	p := tuples.Point(0, 1, 0)
 	halfQuarter := matrices.RotationX(math.Pi / 4)
@@ -516,7 +516,7 @@ func TestRotationX(t *testing.T) {
 // Given p ← point(0, 1, 0)
 // And half_quarter ← rotation_x(π / 4)
 // And inv ← inverse(half_quarter)
-// Then inv * p = point(0, √2/2, -√2/2)
+// Then inv * p = point(0, √2/2, -√2/2).
 func TestRotationXInverse(t *testing.T) {
 	p := tuples.Point(0, 1, 0)
 	halfQuarter := matrices.RotationX(math.Pi / 4)
@@ -530,7 +530,7 @@ func TestRotationXInverse(t *testing.T) {
 // And half_quarter ← rotation_y(π / 4)
 // And full_quarter ← rotation_y(π / 2)
 // Then half_quarter * p = point(√2/2, 0, √2/2)
-// And full_quarter * p = point(1, 0, 0)
+// And full_quarter * p = point(1, 0, 0).
 func TestRotationY(t *testing.T) {
 	p := tuples.Point(0, 0, 1)
 	halfQuarter := matrices.RotationY(math.Pi / 4)
@@ -546,7 +546,7 @@ func TestRotationY(t *testing.T) {
 // And half_quarter ← rotation_z(π / 4)
 // And full_quarter ← rotation_z(π / 2)
 // Then half_quarter * p = point(-√2/2, √2/2, 0)
-// And full_quarter * p = point(-1, 0, 0)
+// And full_quarter * p = point(-1, 0, 0).
 func TestRotationZ(t *testing.T) {
 	p := tuples.Point(0, 1, 0)
 	halfQuarter := matrices.RotationZ(math.Pi / 4)
