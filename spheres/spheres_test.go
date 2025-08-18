@@ -1,6 +1,7 @@
 package spheres_test
 
 import (
+	"raytracer-vibe/matrices"
 	"raytracer-vibe/rays"
 	"raytracer-vibe/spheres"
 	"raytracer-vibe/tuples"
@@ -65,4 +66,38 @@ func TestIntersectSetsTheObjectOnTheIntersection(t *testing.T) {
 	assert.Len(t, xs, 2)
 	assert.Equal(t, s, xs[0].Object)
 	assert.Equal(t, s, xs[1].Object)
+}
+
+func TestSphereDefaultTransformation(t *testing.T) {
+	// Scenario: A sphere's default transformation
+	s := spheres.NewSphere()
+	assert.True(t, s.Transform.Equals(matrices.Identity(4)))
+}
+
+func TestSphereSetTransform(t *testing.T) {
+	// Scenario: Changing a sphere's transformation
+	s := spheres.NewSphere()
+	tr := matrices.Translation(2, 3, 4)
+	s.SetTransform(tr)
+	assert.True(t, s.Transform.Equals(tr))
+}
+
+func TestIntersectScaledSphereWithRay(t *testing.T) {
+	// Scenario: Intersecting a scaled sphere with a ray
+	r := rays.New(tuples.Point(0, 0, -5), tuples.Vector(0, 0, 1))
+	s := spheres.NewSphere()
+	s.SetTransform(matrices.Scaling(2, 2, 2))
+	xs := s.Intersect(r)
+	assert.Len(t, xs, 2)
+	assert.InEpsilon(t, 3, xs[0].T, 0.00001)
+	assert.InEpsilon(t, 7, xs[1].T, 0.00001)
+}
+
+func TestIntersectTranslatedSphereWithRay(t *testing.T) {
+	// Scenario: Intersecting a translated sphere with a ray
+	r := rays.New(tuples.Point(0, 0, -5), tuples.Vector(0, 0, 1))
+	s := spheres.NewSphere()
+	s.SetTransform(matrices.Translation(5, 0, 0))
+	xs := s.Intersect(r)
+	assert.Empty(t, xs)
 }
