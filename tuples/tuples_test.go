@@ -11,7 +11,7 @@ func TestAddTuples(t *testing.T) {
 	a1 := tuples.Tuple{X: 3, Y: -2, Z: 5, W: 1}
 	a2 := tuples.Tuple{X: -2, Y: 3, Z: 1, W: 0}
 	expected := tuples.Tuple{X: 1, Y: 1, Z: 6, W: 1}
-	result := tuples.Add(a1, a2)
+	result := a1.Add(a2)
 	assert.True(t, tuples.Equal(expected, result))
 }
 
@@ -19,7 +19,7 @@ func TestSubtractPoints(t *testing.T) {
 	p1 := tuples.Point(3, 2, 1)
 	p2 := tuples.Point(5, 6, 7)
 	expected := tuples.Vector(-2, -4, -6)
-	result := tuples.Subtract(p1, p2)
+	result := p1.Subtract(p2)
 	assert.True(t, tuples.Equal(expected, result))
 }
 
@@ -27,7 +27,7 @@ func TestSubtractVectorFromPoint(t *testing.T) {
 	p := tuples.Point(3, 2, 1)
 	v := tuples.Vector(5, 6, 7)
 	expected := tuples.Point(-2, -4, -6)
-	result := tuples.Subtract(p, v)
+	result := p.Subtract(v)
 	assert.True(t, tuples.Equal(expected, result))
 }
 
@@ -35,7 +35,7 @@ func TestSubtractVectors(t *testing.T) {
 	v1 := tuples.Vector(3, 2, 1)
 	v2 := tuples.Vector(5, 6, 7)
 	expected := tuples.Vector(-2, -4, -6)
-	result := tuples.Subtract(v1, v2)
+	result := v1.Subtract(v2)
 	assert.True(t, tuples.Equal(expected, result))
 }
 
@@ -49,14 +49,14 @@ func TestNegate(t *testing.T) {
 func TestMultiplyByScalar(t *testing.T) {
 	a := tuples.Tuple{X: 1, Y: -2, Z: 3, W: -4}
 	expected := tuples.Tuple{X: 3.5, Y: -7, Z: 10.5, W: -14}
-	result := tuples.Multiply(a, 3.5)
+	result := a.Multiply(3.5)
 	assert.True(t, tuples.Equal(expected, result))
 }
 
 func TestMultiplyByFraction(t *testing.T) {
 	a := tuples.Tuple{X: 1, Y: -2, Z: 3, W: -4}
 	expected := tuples.Tuple{X: 0.5, Y: -1, Z: 1.5, W: -2}
-	result := tuples.Multiply(a, 0.5)
+	result := a.Multiply(0.5)
 	assert.True(t, tuples.Equal(expected, result))
 }
 
@@ -105,7 +105,7 @@ func TestMagnitudeOfNormalizedVector(t *testing.T) {
 func TestDotProduct(t *testing.T) {
 	a := tuples.Vector(1, 2, 3)
 	b := tuples.Vector(2, 3, 4)
-	assert.True(t, tuples.FloatEqual(20.0, tuples.Dot(a, b)))
+	assert.True(t, tuples.FloatEqual(20.0, a.Dot(b)))
 }
 
 func TestCrossProduct(t *testing.T) {

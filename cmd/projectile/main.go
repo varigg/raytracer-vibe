@@ -27,14 +27,14 @@ const (
 )
 
 func Tick(env Environment, proj Projectile) Projectile {
-	position := tuples.Add(proj.Position, proj.Velocity)
-	velocity := tuples.Add(tuples.Add(proj.Velocity, env.Gravity), env.Wind)
+	position := proj.Position.Add(proj.Velocity)
+	velocity := proj.Velocity.Add(env.Gravity).Add(env.Wind)
 	return Projectile{Position: position, Velocity: velocity}
 }
 
 func main() {
 	start := tuples.Point(0, 1, 0)
-	velocity := tuples.Multiply(tuples.Normalize(tuples.Vector(1, ProjectileUpVelocity, 0)), VelocityMultiplier)
+	velocity := tuples.Normalize(tuples.Vector(1, ProjectileUpVelocity, 0)).Multiply(VelocityMultiplier)
 	p := Projectile{Position: start, Velocity: velocity}
 
 	gravity := tuples.Vector(0, -0.1, 0)

@@ -26,7 +26,7 @@ func (c Color) Blue() float64 {
 	return c.Z
 }
 
-func Add(t1, t2 Tuple) Tuple {
+func (t1 Tuple) Add(t2 Tuple) Tuple {
 	return Tuple{
 		X: t1.X + t2.X,
 		Y: t1.Y + t2.Y,
@@ -56,7 +56,7 @@ func Vector(x, y, z float64) Tuple {
 	return Tuple{X: x, Y: y, Z: z, W: 0.0}
 }
 
-func Subtract(t1, t2 Tuple) Tuple {
+func (t1 Tuple) Subtract(t2 Tuple) Tuple {
 	return Tuple{
 		X: t1.X - t2.X,
 		Y: t1.Y - t2.Y,
@@ -74,12 +74,12 @@ func Negate(t Tuple) Tuple {
 	}
 }
 
-func Multiply(t Tuple, scalar float64) Tuple {
+func (t1 Tuple) Multiply(scalar float64) Tuple {
 	return Tuple{
-		X: t.X * scalar,
-		Y: t.Y * scalar,
-		Z: t.Z * scalar,
-		W: t.W * scalar,
+		X: t1.X * scalar,
+		Y: t1.Y * scalar,
+		Z: t1.Z * scalar,
+		W: t1.W * scalar,
 	}
 }
 
@@ -106,7 +106,7 @@ func Normalize(t Tuple) Tuple {
 	}
 }
 
-func Dot(t1, t2 Tuple) float64 {
+func (t1 Tuple) Dot(t2 Tuple) float64 {
 	return t1.X*t2.X +
 		t1.Y*t2.Y +
 		t1.Z*t2.Z +
