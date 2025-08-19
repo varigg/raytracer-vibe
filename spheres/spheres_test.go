@@ -1,6 +1,7 @@
 package spheres_test
 
 import (
+	"math"
 	"raytracer-vibe/matrices"
 	"raytracer-vibe/rays"
 	"raytracer-vibe/spheres"
@@ -100,4 +101,59 @@ func TestIntersectTranslatedSphereWithRay(t *testing.T) {
 	s.SetTransform(matrices.Translation(5, 0, 0))
 	xs := s.Intersect(r)
 	assert.Empty(t, xs)
+}
+
+func TestNormalOnSphereAtPointOnXAxis(t *testing.T) {
+	// Scenario: The normal on a sphere at a point on the x axis
+	s := spheres.NewSphere()
+	n := s.NormalAt(tuples.Point(1, 0, 0))
+	assert.True(t, n.Equals(tuples.Vector(1, 0, 0)))
+}
+
+func TestNormalOnSphereAtPointOnYAxis(t *testing.T) {
+	// Scenario: The normal on a sphere at a point on the y axis
+	s := spheres.NewSphere()
+	n := s.NormalAt(tuples.Point(0, 1, 0))
+	assert.True(t, n.Equals(tuples.Vector(0, 1, 0)))
+}
+
+func TestNormalOnSphereAtPointOnZAxis(t *testing.T) {
+	// Scenario: The normal on a sphere at a point on the z axis
+	s := spheres.NewSphere()
+	n := s.NormalAt(tuples.Point(0, 0, 1))
+	assert.True(t, n.Equals(tuples.Vector(0, 0, 1)))
+}
+
+func TestNormalOnSphereAtNonaxialPoint(t *testing.T) {
+	// Scenario: The normal on a sphere at a nonaxial point
+	s := spheres.NewSphere()
+	val := math.Sqrt(3) / 3
+	n := s.NormalAt(tuples.Point(val, val, val))
+	assert.True(t, n.Equals(tuples.Vector(val, val, val)))
+}
+
+func TestNormalIsNormalizedVector(t *testing.T) {
+	// Scenario: The normal is a normalized vector
+	s := spheres.NewSphere()
+	val := math.Sqrt(3) / 3
+	n := s.NormalAt(tuples.Point(val, val, val))
+	assert.True(t, n.Equals(tuples.Normalize(n)))
+}
+
+func TestComputingNormalOnTranslatedSphere(t *testing.T) {
+	// Scenario: Computing the normal on a translated sphere
+	s := spheres.NewSphere()
+	s.SetTransform(matrices.Translation(0, 1, 0))
+	n := s.NormalAt(tuples.Point(0, 1.70711, -0.70711))
+	assert.True(t, n.Equals(tuples.Vector(0, 0.70711, -0.70711)))
+}
+
+func TestComputingNormalOnTransformedSphere(t *testing.T) {
+	// Scenario: Computing the normal on a transformed sphere
+	s := spheres.NewSphere()
+	m := matrices.Scaling(1, 0.5, 1).Multiply(matrices.RotationZ(math.Pi / 5))
+	s.SetTransform(m)
+	val := math.Sqrt(2) / 2
+	n := s.NormalAt(tuples.Point(0, val, -val))
+	assert.True(t, n.Equals(tuples.Vector(0, 0.97014, -0.24254)))
 }

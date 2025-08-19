@@ -1,79 +1,93 @@
-Transforming Rays and Spheres
-A unit sphere fixed at the origin is (at best) barely useful. You certainly couldn’t have more than one, which makes it hard to make any kind of scene out of them. What you want is to be able to transform this sphere—scale it larger or smaller, move it around, and maybe (if one side were textured differently) rotate it a bit.
+Surface Normals
+A surface normal (or just normal) is a vector that points perpendicular to a surface at a given point.
 
-If you allow moving the sphere, though, your beautiful ray-sphere intersection algorithm has to change, because it assumes the sphere is always at the origin and always has a radius of 1. It would be lovely if you could keep that assumption, while still allowing spheres to be resized and repositioned. It would make your implementation so much cleaner and simpler.
-So, here’s a crazy idea. What if, instead of moving the sphere, you move the ray?
-Want to translate your sphere away from the ray? That’s just the same as translating the ray away from the sphere, in the opposite direction.
+Let’s look at how to actually compute those normal vectors.
 
-But what about scaling? What if you want to make your sphere bigger? It turns out that this is just the same as shrinking the distance between the ray and the sphere. It’s an inverse relationship.
-Okay, but what about rotation? Surely it can’t be that simple for something like rotation? Oh, but it can! If you want to rotate your sphere, you rotate the ray by the inverse of the rotation you wanted to apply to the sphere.
-In other words: whatever transformation you want to apply to the sphere, apply the inverse of that transformation to the ray, instead. Crazy, right? But it works!
-
-World Space vs. Object Space
-Another way to think about transformation matrices is to think of them as converting points between two different coordinate systems. At the scene level, everything is in world space coordinates, relative to the overall world. But at the object level, everything is in object space coordinates, relative to the object itself.
-
-Multiplying a point in object space by a transformation matrix converts that point to world space—scaling it, translating, rotating it, or whatever. Multiplying a point in world space by the inverse of the transformation matrix converts that point back to object space.
-
-Want to intersect a ray in world space with a sphere in object space? Just convert the ray’s origin and direction to that same object space, and you’re golden.
-
-So, first, make sure your ray is transformable. Add the following tests to your suite, introducing a transform(ray, matrix) function which applies the given transformation matrix to the given ray, and returns a new ray with transformed origin and direction. Make sure it returns a new ray, rather than modifying the ray in place! You need to keep the original, untransformed ray, so that you can use it to calculate locations in world space later.
-
-features/rays.feature
-​  ​Scenario​: Translating a ray
-​  ​Given​ r ← ray(point(1, 2, 3), vector(0, 1, 0))
-​  ​And​ m ← translation(3, 4, 5)
-​  ​When​ r2 ← transform(r, m)
-​  ​Then​ r2.origin = point(4, 6, 8)
-​  ​And​ r2.direction = vector(0, 1, 0)
-​ 
-​  ​Scenario​: Scaling a ray
-​  ​Given​ r ← ray(point(1, 2, 3), vector(0, 1, 0))
-​  ​And​ m ← scaling(2, 3, 4)
-​  ​When​ r2 ← transform(r, m)
-​  ​Then​ r2.origin = point(2, 6, 12)
-​  ​And​ r2.direction = vector(0, 3, 0)
-
-Notice how, in the second test, the ray’s direction vector is left unnormalized. This is intentional, and important! Transforming a ray has the effect of (potentially) stretching or shrinking its direction vector. You have to leave that vector with its new length, so that when the t value is eventually computed, it represents an intersection at the correct distance (in world space!) from the ray’s origin.
-
-Pause here and make those tests pass by implementing the transform(ray, matrix) function.
-
-Once your rays can be transformed, the next step is to allow a transformation to be assigned to a sphere. Implement the following tests to demonstrate both that a sphere has a default transformation and that its transformation can be assigned.
+COMPUTING THE NORMAL ON A SPHERE
+Start by writing the following tests to demonstrate computing the normal at various points on a sphere. Introduce a new function, normal_at(sphere, point), which will return the normal on the given sphere, at the given point. You may assume that the point will always be on the surface of the sphere.
 
 features/spheres.feature
-​  ​Scenario​: A sphere's default transformation
+​  ​Scenario​: The normal on a sphere at a point on the x axis
 ​  ​Given​ s ← sphere()
-​  ​Then​ s.transform = identity_matrix
+​  ​When​ n ← normal_at(s, point(1, 0, 0))
+​  ​Then​ n = vector(1, 0, 0)
 ​ 
-​  ​Scenario​: Changing a sphere's transformation
+​  ​Scenario​: The normal on a sphere at a point on the y axis
 ​  ​Given​ s ← sphere()
-​  ​And​ t ← translation(2, 3, 4)
-​  ​When​ set_transform(s, t)
-​  ​Then​ s.transform = t
+​  ​When​ n ← normal_at(s, point(0, 1, 0))
+​  ​Then​ n = vector(0, 1, 0)
+​ 
+​  ​Scenario​: The normal on a sphere at a point on the z axis
+​  ​Given​ s ← sphere()
+​  ​When​ n ← normal_at(s, point(0, 0, 1))
+​  ​Then​ n = vector(0, 0, 1)
+​ 
+​  ​Scenario​: The normal on a sphere at a nonaxial point
+​  ​Given​ s ← sphere()
+​  ​When​ n ← normal_at(s, point(√3/3, √3/3, √3/3))
+​  ​Then​ n = vector(√3/3, √3/3, √3/3)
 
-Finally, make it so that your intersect function transforms the ray before doing the calculation. Add the following tests to illustrate two possible scenarios.
+One other feature of these normal vectors is hiding in plain sight: they’re normalized. Add the following test to your suite, which shows that a surface normal should always be normalized.
 
 features/spheres.feature
-​  ​Scenario​: Intersecting a scaled sphere with a ray
-​  ​Given​ r ← ray(point(0, 0, -5), vector(0, 0, 1))
-​  ​And​ s ← sphere()
-​  ​When​ set_transform(s, scaling(2, 2, 2))
-​  ​And​ xs ← intersect(s, r)
-​  ​Then​ xs.count = 2
-​  ​And​ xs[0].t = 3
-​  ​And​ xs[1].t = 7
-​ 
-​  ​Scenario​: Intersecting a translated sphere with a ray
-​  ​Given​ r ← ray(point(0, 0, -5), vector(0, 0, 1))
-​  ​And​ s ← sphere()
-​  ​When​ set_transform(s, translation(5, 0, 0))
-​  ​And​ xs ← intersect(s, r)
-​  ​Then​ xs.count = 0
+​  ​Scenario​: The normal is a normalized vector
+​  ​Given​ s ← sphere()
+​  ​When​ n ← normal_at(s, point(√3/3, √3/3, √3/3))
+​  ​Then​ n = normalize(n)
 
-Now go and make those tests pass. You’ll need to make sure the ray passed to intersect is transformed by the inverse of the sphere’s transformation matrix. In pseudocode, it means adding a line at the top of the function, like this:
+Now, let’s make those tests pass by implementing that normal_at function. Algorithmically speaking, you find the normal by taking the point in question and subtracting the origin of the sphere ((0,0,0) in your case). Here it is in pseudocode:
 
-​  ​function​ intersect(sphere, ray)
-​  ray2 ← transform(ray, inverse(sphere.transform))
-​ 
-​  ​# ...​
+​  ​function​ normal_at(sphere, p)
+​  ​return​ normalize(p - point(0, 0, 0))
 ​  ​end​ ​function​
-Make sure you use the new ray in the function’s other calculations, as well.
+(Note that, because this is a unit sphere, the vector will be normalized by default for any point on its surface, so it’s not strictly necessary to explicitly normalize it here.)
+
+If only that were all there were to it! Sadly, the sphere’s transformation matrix is going to throw a (small) wrench into how the normal is computed. Let’s take a look at what needs to happen for the normal calculation to compensate for a transformation matrix.
+
+TRANSFORMING NORMALS
+Imagine you have a sphere that has been translated some distance from the world origin. If you were to naively apply the algorithm above to find the normal at almost any point on that sphere, you’d find that it no longer works correctly. Why? The problem is that your most basic assumption has been broken: the sphere’s origin is no longer at the world origin.
+
+Write the following tests to show what ought to happen. They demonstrate computing the normal first on a translated sphere and then on a scaled and rotated sphere.
+
+features/spheres.feature
+​  ​Scenario​: Computing the normal on a translated sphere
+​  ​Given​ s ← sphere()
+​  ​And​ set_transform(s, translation(0, 1, 0))
+​  ​When​ n ← normal_at(s, point(0, 1.70711, -0.70711))
+​  ​Then​ n = vector(0, 0.70711, -0.70711)
+​ 
+​  ​Scenario​: Computing the normal on a transformed sphere
+​  ​Given​ s ← sphere()
+​  ​And​ m ← scaling(1, 0.5, 1) \* rotation_z(π/5)
+​  ​And​ set_transform(s, m)
+​  ​When​ n ← normal_at(s, point(0, √2/2, -√2/2))
+​  ​Then​ n = vector(0, 0.97014, -0.24254)
+
+These won’t pass yet, but you’ll turn them green in just a moment.
+
+Remember back when we talked about ​World Space vs. Object Space​? It turns out that this distinction between world and object space is part of the solution to this conundrum, too. You have a point in world space, and you want to know the normal on the corresponding surface in object space. What to do? Well, first you have to convert the point from world space to object space by multiplying the point by the inverse of the transformation matrix, thus:
+
+​  object_point ← inverse(transform) \* world_point
+
+With that point now in object space, you can compute the normal as before, because in object space, the sphere’s origin is at the world’s origin. However! The normal vector you get will also be in object space…and to draw anything useful with it you’re going to need to convert it back to world space somehow.
+
+Now, if the normal were a point you could transform it by multiplying it by the transformation matrix. After all, that’s what the transformation matrix does: it transforms points from object space to world space. And in truth, this almost works here, too.
+
+So how do you go about keeping the normals perpendicular to their surface? The answer is to multiply the normal by the inverse transpose matrix instead. So you take your transformation matrix, invert it, and then transpose the result. This is what you need to multiply the normal by.
+
+​  world_normal ← transpose(inverse(transform)) \* object_normal
+
+Be aware of two additional things here:
+
+Technically, you should be finding submatrix(transform, 3, 3) (from ​Spotting Submatrices​) first, and multiplying by the inverse and transpose of that. Otherwise, if your transform includes any kind of translation, then multiplying by its transpose will wind up mucking with the w coordinate in your vector, which will wreak all kinds of havoc in later computations. But if you don’t mind a bit of a hack, you can avoid all that by just setting world_normal.w to 0 after multiplying by the 4x4 inverse transpose matrix.
+The inverse transpose matrix may change the length of your vector, so if you feed it a vector of length 1 (a normalized vector), you may not get a normalized vector out! It’s best to be safe, and always normalize the result.
+In pseudocode, then, your normal_at function should look something like the following.
+
+​  ​function​ normal_at(sphere, world_point)
+​  object_point ← inverse(sphere.transform) _ world_point
+​  object_normal ← object_point - point(0, 0, 0)
+​  world_normal ← transpose(inverse(sphere.transform)) _ object_normal
+​  world_normal.w ← 0
+​  ​return​ normalize(world_normal)
+​  ​end​ ​function​
+Go ahead and pause here while you get things working to this point. Once your tests are all green, let’s talk about how to compute the reflection vector.

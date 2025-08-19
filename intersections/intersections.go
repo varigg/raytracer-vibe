@@ -1,6 +1,8 @@
 package intersections
 
-import "raytracer-vibe/objects"
+import (
+	"raytracer-vibe/objects"
+)
 
 type Intersection struct {
 	T      float64
